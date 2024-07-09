@@ -19,27 +19,26 @@ const Country = ({country}) => {
   </div>
 }
 
-const Countries = ({countries, filter}) => {
+const Countries = ({countries, filter, setSelected}) => {
   const filteredCountries = countries
   .filter(country=> country.name.common.toLowerCase().includes(filter))
-  console.log(filteredCountries.length, filteredCountries)
   if(filteredCountries.length > 10){
     return <div>Too many matches, specify another filter</div>
   } else if(filteredCountries.length > 1 && filteredCountries.length <= 10) {
     return <>
-      {filteredCountries.map(country => <div key={country.name.common}>{country.name.common}</div>)}
+      {filteredCountries.map(country => <div key={country.name.common}>{country.name.common} <button onClick={()=>setSelected(country)}>show</button></div>)}
     </>
   } else if(filteredCountries.length === 1){
-    return <Country country={filteredCountries[0]}/>
-  } else {
-    return null
-  }
+    setSelected(filteredCountries[0])
+  } 
+  return null
 
 }
 
 const App = () => {
   const [countries, setCountries] = useState([])
   const [filter, setFilter] = useState('')
+  const [selected, setSelected] = useState(null)
 
   useEffect(() => {
     countryService.getAll()
@@ -51,12 +50,14 @@ const App = () => {
   const handleFilter = (event) => {
     const filterLower = event.target.value.toLowerCase()
     setFilter(filterLower)
+    setSelected(null)
   }
 
   return (
     <div>
       <Filter handleFilter={handleFilter} />
-      <Countries countries={countries} filter={filter}/>
+      <Countries countries={countries} filter={filter} setSelected={setSelected}/>
+      {selected && <Country country={selected}/>}
     </div>
   )
 }
