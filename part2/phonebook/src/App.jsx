@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
 import personService from './services/persons'
 
 const Filter = ({handleFilter}) => {
@@ -34,6 +33,17 @@ const Persons = ({persons, filter, handleDeletePerson}) => {
 </>
 }
 
+const ErrorMsg = ({message}) => {
+  if(message === null) {
+    return null
+  }
+  return (
+    <div className='error'>
+      {message}
+    </div>
+  )
+}
+
 const Notification = ({message}) => {
   if(message === null) {
     return null
@@ -51,6 +61,7 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('')
   const [filter, setFilter] = useState('')
   const [notiMessage, setNotiMessage] = useState(null)
+  const [errorMsg, setErrorMsg] = useState(null)
 
   useEffect(() => {
     personService.getAll()
@@ -72,6 +83,12 @@ const App = () => {
               setNotiMessage(null)
             }, 5000)
            setPersons(persons.map(person => person.name !== newName ? person : response))
+          })
+          .catch(error=>{
+            setErrorMsg(`Information of ${nameExists.name} has already been removed from server`)
+            setTimeout(() => {
+              setErrorMsg(null)
+            }, 5000)
           })
       }
     }else{
@@ -123,6 +140,7 @@ const App = () => {
   return (
     <div>
       <Notification message={notiMessage}/>
+      <ErrorMsg message={errorMsg} />
       <h2>Phonebook</h2>
       <Filter handleFilter={handleFilter} />
       <h3>add a new</h3>
