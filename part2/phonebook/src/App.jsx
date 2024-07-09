@@ -20,16 +20,16 @@ const PersonForm = ({handleNameChange, handleNumberChange, addName, newName, new
   </form>
 }
 
-const Person = ({name, number}) => {
-  return <div>{name} {number}</div>
+const Person = ({person, handleDeletePerson}) => {
+  return <div>{person.name} {person.number} <button onClick={()=>handleDeletePerson(person)}>delete</button></div>
 }
 
-const Persons = ({persons, filter}) => {
+const Persons = ({persons, filter, handleDeletePerson}) => {
   return <>
   {
     persons
     .filter(person=> person.name.toLowerCase().includes(filter))
-    .map(person=><Person key={person.name} name={person.name} number={person.number}/>)
+    .map(person=><Person key={person.id} person={person} handleDeletePerson={handleDeletePerson}/>)
   }
 </>
 }
@@ -43,7 +43,7 @@ const App = () => {
   useEffect(() => {
     personService.getAll()
       .then(response => {
-        setPersons(response.data)
+        setPersons(response)
       })
   }, [])
 
@@ -59,7 +59,7 @@ const App = () => {
       }
       personService.create(personObject)
         .then(response => {
-          setPersons(persons.concat(response.data))
+          setPersons(persons.concat(response))
         })
     }
     setNewName('')
@@ -79,6 +79,17 @@ const App = () => {
     setFilter(filterLower)
   }
 
+  const handleDeletePerson = (person) => {
+    if(confirm(`Delete ${person.name} ?`)){
+      console.log('id',person.id)
+      personService.remove(person.id)
+        .then(response => {
+          const newPersons = persons.filter(person => person.id !== response.id)
+          setPersons(newPersons)
+        })
+    }
+  }
+
   return (
     <div>
       <h2>Phonebook</h2>
@@ -92,7 +103,7 @@ const App = () => {
         newNumber={newNumber}
       />
       <h3>Numbers</h3>
-      <Persons persons={persons} filter={filter}/>
+      <Persons persons={persons} filter={filter} handleDeletePerson={handleDeletePerson}/>
     </div>
   )
 }
