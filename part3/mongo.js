@@ -6,10 +6,6 @@ if (process.argv.length<3) {
 }
 
 const password = process.argv[2]
-const name = process.argv[3]
-const number = process.argv[4]
-
-
 const url =
   `mongodb+srv://tontongfordev:${password}@fullstack-cluster.anxgglt.mongodb.net/?retryWrites=true&w=majority`
 
@@ -24,12 +20,26 @@ const phoneBookSchema = new mongoose.Schema({
 
 const PhoneBook = mongoose.model('PhoneBook', phoneBookSchema)
 
-const phoneBook = new PhoneBook({
-  name,
-  number,
-})
+if (process.argv.length === 3){
+    console.log('phonebook: ')
+    PhoneBook.find({}).then(result => {
+        result.forEach(e => {
+          console.log(`${e.name} ${e.number}`)
+        })
+        mongoose.connection.close()
+      })
+} else{
+    const name = process.argv[3]
+    const number = process.argv[4]
+    
+    const phoneBook = new PhoneBook({
+      name,
+      number,
+    })
+    
+    phoneBook.save().then(result => {
+      console.log(`added ${name} number ${number} to phonebook`)
+      mongoose.connection.close()
+    })
+}
 
-phoneBook.save().then(result => {
-  console.log(`added ${name} number ${number} to phonebook`)
-  mongoose.connection.close()
-})
