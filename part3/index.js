@@ -1,6 +1,7 @@
 const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
+const mongoose = require('mongoose')
 
 const app = express()
 
@@ -33,6 +34,18 @@ let persons = [
   }
 ]
 
+const url = process.env.MONGO_URL;
+mongoose.set('strictQuery',false)
+
+mongoose.connect(url)
+
+const phoneBookSchema = new mongoose.Schema({
+  name: String,
+  number: String,
+})
+
+const PhoneBook = mongoose.model('PhoneBook', phoneBookSchema)
+
 app.get('/', (request, response) => {
   response.send('<h1>Hello World!</h1>')
 })
@@ -47,7 +60,12 @@ app.get('/api/persons/:id', (request, response) => {
   }
 })
 app.get('/api/persons', (request, response) => {
-  response.json(persons)
+  PhoneBook.find({}).then(result => {
+    result.forEach(persons => {
+      response.json(persons)
+    })
+    mongoose.connection.close()
+  })
 })
 app.post('/api/persons', (request, response) => {
   const person = { ...request.body }
