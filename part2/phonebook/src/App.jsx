@@ -72,39 +72,40 @@ const App = () => {
 
   const addName = (event) => {
     event.preventDefault()
-    
-    const nameExists = persons.find(person=> person.name === newName)
-    if(nameExists){
-      if(confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)){
-        personService.update(nameExists.id, {...nameExists, number: newNumber})
+
+    personService.getAll({name:newName}).then(response=>{
+      if(response.length > 0){
+        if(confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)){
+          personService.update(response[0].id, {number: newNumber})
+            .then(res => {
+              setNotiMessage(`Updated ${res.name}`)
+              setTimeout(() => {
+                setNotiMessage(null)
+              }, 5000)
+              setPersons(persons.map(person => person.name !== newName ? person : res))
+            })
+            .catch(error=>{
+              setErrorMsg(`Information of ${newName} has already been removed from server`)
+              setTimeout(() => {
+                setErrorMsg(null)
+              }, 5000)
+            })
+        }
+      }else{
+        const personObject = {
+          name: newName,
+          number: newNumber
+        }
+        personService.create(personObject)
           .then(response => {
-            setNotiMessage(`Updated ${response.name}`)
+            setNotiMessage(`Added ${response.name}`)
             setTimeout(() => {
               setNotiMessage(null)
             }, 5000)
-           setPersons(persons.map(person => person.name !== newName ? person : response))
-          })
-          .catch(error=>{
-            setErrorMsg(`Information of ${nameExists.name} has already been removed from server`)
-            setTimeout(() => {
-              setErrorMsg(null)
-            }, 5000)
+            setPersons(persons.concat(response))
           })
       }
-    }else{
-      const personObject = {
-        name: newName,
-        number: newNumber
-      }
-      personService.create(personObject)
-        .then(response => {
-          setNotiMessage(`Added ${response.name}`)
-          setTimeout(() => {
-            setNotiMessage(null)
-          }, 5000)
-          setPersons(persons.concat(response))
-        })
-    }
+    })
     setNewName('')
     setNewNumber('')
   }
@@ -124,14 +125,13 @@ const App = () => {
 
   const handleDeletePerson = (person) => {
     if(confirm(`Delete ${person.name} ?`)){
-      console.log('id',person.id)
       personService.remove(person.id)
         .then(response => {
-          setNotiMessage(`Deleted ${response.name}`)
+          setNotiMessage(`Deleted ${person.name}`)
           setTimeout(() => {
             setNotiMessage(null)
           }, 5000)
-          const newPersons = persons.filter(person => person.id !== response.id)
+          const newPersons = persons.filter(p =>p.id !== person.id)
           setPersons(newPersons)
         })
     }
