@@ -65,12 +65,15 @@ app.delete('/api/persons/:id', (request, response, next) => {
 })
 
 app.get('/info', (request, response) => {
-  response.send(`
+  PhoneBook.find({}).then(persons => {
+    response.send(`
     <div>
       <div>Phonebook has info for ${persons.length} people</div>
       <div>${Date().toString()}</div>
     </div>`
-  )
+    )
+  })
+
 })
 
 const unknownEndpoint = (request, response) => {
