@@ -30,7 +30,7 @@ app.get('/api/persons/:id', (request, response, next) => {
 })
 
 app.get('/api/persons', (request, response) => {
-  PhoneBook.find({}).then(result => {
+  PhoneBook.find(request.query).then(result => {
     response.json(result)
   })
 })
@@ -47,9 +47,20 @@ app.post('/api/persons', (request, response) => {
   newPerson.save().then(savedPerson => response.json(savedPerson))
 })
 
+app.put('/api/persons/:id', (request, response, next) => {
+  const { id } = request.params
+  const { body } = request
+
+  PhoneBook.findByIdAndUpdate(id, body, { new: true })
+    .then(updatedPerson => {
+      response.json(updatedPerson)
+    })
+    .catch(error => next(error))
+})
+
 app.delete('/api/persons/:id', (request, response, next) => {
   const id = request.params.id
-  PhoneBook.findByIdAndDelete(id).then(person => response.status(204).json(person))
+  PhoneBook.findByIdAndDelete(id).then(result => response.status(204).end())
     .catch(error => next(error))
 })
 
