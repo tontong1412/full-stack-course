@@ -85,7 +85,7 @@ const App = () => {
               setPersons(persons.map(person => person.name !== newName ? person : res))
             })
             .catch(error=>{
-              setErrorMsg(`Information of ${newName} has already been removed from server`)
+              setErrorMsg(error.response.data.error)
               setTimeout(() => {
                 setErrorMsg(null)
               }, 5000)
@@ -103,6 +103,12 @@ const App = () => {
               setNotiMessage(null)
             }, 5000)
             setPersons(persons.concat(response))
+          })
+          .catch(error=>{
+            setErrorMsg(error.response.data.error)
+            setTimeout(() => {
+              setErrorMsg(null)
+            }, 5000)
           })
       }
     })
