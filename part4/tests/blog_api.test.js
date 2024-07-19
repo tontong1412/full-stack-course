@@ -108,6 +108,25 @@ test('when delete existing blog', async () => {
   assert.strictEqual(blogsAtEnd.length, blogsAtStart.length - 1)
 })
 
+test('when update information of an individual blog post', async () => {
+  const blogsAtStart = await helper.blogsInDb()
+  const response = await api
+    .put(`/api/blogs/${blogsAtStart[0].id}`)
+    .send({ likes: 20 })
+    .expect(200)
+
+  assert.strictEqual(response.body.likes, 20)
+})
+
+test('when update blog that does not exist', async () => {
+  const fakeId = '507f1f77bcf86cd799439011'
+  await api
+    .put(`/api/blogs/${fakeId}`)
+    .send({ likes: 20 })
+    .expect(404)
+
+})
+
 after(async () => {
   await mongoose.connection.close()
 })
