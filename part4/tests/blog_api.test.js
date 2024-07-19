@@ -52,6 +52,21 @@ test('a valid blog can be added', async () => {
 
 test('blog without title is not added', async () => {
   const newBlog = {
+    url: 'http://test.com',
+    author: 'Harry Potter'
+  }
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(400)
+
+  const blogsAtEnd = await helper.blogsInDb()
+  assert.strictEqual(blogsAtEnd.length, 2)
+})
+
+test('blog without url is not added', async () => {
+  const newBlog = {
+    title: 'How to be famouse',
     author: 'Harry Potter'
   }
   await api
@@ -66,7 +81,8 @@ test('blog without title is not added', async () => {
 test('blog without likes is added with default value 0', async () => {
   const newBlog = {
     title: 'How to be famous',
-    author: 'Harry Potter'
+    author: 'Harry Potter',
+    url: 'http://test.com'
   }
   const response = await api
     .post('/api/blogs')
