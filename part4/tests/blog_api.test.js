@@ -11,10 +11,11 @@ const api = supertest(app)
 
 beforeEach(async () => {
   await Blog.deleteMany({})
-  let blogObject = new Blog(helper.initialBlogs[0])
-  await blogObject.save()
-  blogObject = new Blog(helper.initialBlogs[1])
-  await blogObject.save()
+
+  const blogObejects = helper.initialBlogs.map(blog => new Blog(blog))
+  const promiseArray = blogObejects.map(blog => blog.save())
+
+  await Promise.all(promiseArray)
 })
 
 test('blogs are returned as json', async () => {
@@ -39,7 +40,12 @@ test('unique identifier property is named id', async () => {
 test('a valid blog can be added', async () => {
   await api
     .post('/api/blogs')
-    .send(helper.initialBlogs[2])
+    .send({
+      title: "Canonical string reduction",
+      author: "Edsger W. Dijkstra",
+      url: "http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html",
+      likes: 12,
+    })
     .expect(201)
     .expect('Content-Type', /application\/json/)
 
@@ -47,7 +53,7 @@ test('a valid blog can be added', async () => {
   assert.strictEqual(blogsAtEnd.length, 3)
 
   const titles = blogsAtEnd.map(r => r.title)
-  assert(titles.includes(helper.initialBlogs[2].title))
+  assert(titles.includes("Canonical string reduction"))
 })
 
 test('blog without title is not added', async () => {
@@ -90,7 +96,16 @@ test('blog without likes is added with default value 0', async () => {
     .expect(201)
 
   assert.strictEqual(response.body.likes, 0)
+})
 
+test('when delete existing blog', async () => {
+  const blogsAtStart = await helper.blogsInDb()
+  await api
+    .delete(`/api/blogs/${blogsAtStart[0].id}`)
+    .expect(204)
+
+  const blogsAtEnd = await helper.blogsInDb()
+  assert.strictEqual(blogsAtEnd.length, blogsAtStart.length - 1)
 })
 
 after(async () => {
