@@ -63,6 +63,20 @@ test('blog without title is not added', async () => {
   assert.strictEqual(blogsAtEnd.length, 2)
 })
 
+test('blog without likes is added with default value 0', async () => {
+  const newBlog = {
+    title: 'How to be famous',
+    author: 'Harry Potter'
+  }
+  const response = await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+
+  assert.strictEqual(response.body.likes, 0)
+
+})
+
 after(async () => {
   await mongoose.connection.close()
 })
