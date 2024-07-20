@@ -1,5 +1,7 @@
 const Blog = require('../models/blog')
 const User = require('../models/user')
+const jwt = require('jsonwebtoken')
+const bcrypt = require('bcrypt')
 
 const initialBlogs = [
   {
@@ -34,9 +36,43 @@ const usersInDb = async () => {
   return users.map(user => user.toJSON())
 }
 
+const createUser = async ({ username, password, name }) => {
+
+  const saltRounds = 10
+  const passwordHash = await bcrypt.hash(password, saltRounds)
+
+  const userObject = new User({
+    username,
+    name,
+    passwordHash
+  })
+
+  const user = await userObject.save()
+  return user
+}
+
+const getToken = async () => {
+
+  const user = await User.findOne({ username: 'root' })
+
+  const userForToken = {
+    username: user.username,
+    id: user._id,
+  }
+  // token expires in 60*60 seconds, that is, in one hour
+  const token = jwt.sign(
+    userForToken,
+    process.env.SECRET,
+    { expiresIn: 60 * 60 }
+  )
+  return token
+}
+
 module.exports = {
   initialBlogs,
   nonExistingId,
   blogsInDb,
   usersInDb,
+  getToken,
+  createUser
 }
