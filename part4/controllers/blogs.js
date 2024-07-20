@@ -20,9 +20,10 @@ blogsRouter.post('/', middleware.userExtractor, async (request, response) => {
   response.status(201).json(result)
 })
 
-blogsRouter.put('/:id', async (request, response) => {
+blogsRouter.put('/:id', middleware.userExtractor, async (request, response) => {
   const { id } = request.params
   const { body } = request
+
   const updatedBlog = await Blog.findByIdAndUpdate(
     id,
     body,
@@ -31,6 +32,8 @@ blogsRouter.put('/:id', async (request, response) => {
       runValidators: true,
       context: 'query'
     })
+    .populate('user')
+    .exec()
 
   if (!updatedBlog) {
     return response.status(404).end()
