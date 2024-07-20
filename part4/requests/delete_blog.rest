@@ -1,0 +1,4 @@
+DELETE http://localhost:3002/api/blogs/669bffae40215c74bcb5cd85
+content-type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRvbnRvbmciLCJpZCI6IjY2OWI5ODViYmRiY2NhN2NlNWIxMTUxNyIsImlhdCI6MTcyMTUwMjIzMiwiZXhwIjoxNzIxNTA1ODMyfQ.fNbLyn7ZLUxHz7OdP_qKujH__XTDlD-3J3pNjEd-SDM
+
