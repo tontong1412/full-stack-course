@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import ErrorMsg from './components/ErrorMsg'
+import InfoMsg from './components/InfoMsg'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
@@ -8,6 +9,7 @@ const App = () => {
   const [blogs, setBlogs] = useState([])
   const [user, setUser] = useState(null)
   const [errorMessage, setErrorMessage] = useState(null)
+  const [infoMessage, setInfoMessage] = useState(null)
   const [username, setUsername] = useState('') 
   const [password, setPassword] = useState('')
 
@@ -55,6 +57,7 @@ const App = () => {
   if(user===null){
     return (
       <>
+      <ErrorMsg message={errorMessage} />
       <h2>Log in to application</h2>
       <form onSubmit={handleLogin}>
         <div>
@@ -77,7 +80,6 @@ const App = () => {
         </div>
         <button type="submit">login</button>
       </form>
-      <ErrorMsg message={errorMessage} />
       </>
     )
   }
@@ -93,7 +95,19 @@ const App = () => {
     blogService.create({
       title, author, url
     }).then(response=>{
+      setInfoMessage(`a new blog "${response.title}" added`)
+      setTimeout(() => {
+        setInfoMessage(null)
+      }, 3000)
       setBlogs(blogs.concat(response))
+      setTitle('')
+      setAuthor('')
+      setUrl('')
+    }).catch(error=>{
+      setErrorMessage(error.response.data.error)
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 5000)
       setTitle('')
       setAuthor('')
       setUrl('')
@@ -138,6 +152,8 @@ const App = () => {
 
   return (
     <div>
+      <ErrorMsg message={errorMessage} />
+      <InfoMsg message={infoMessage}/>
       <h2>blogs</h2>
       <p>{`${user.name} is logged in`}</p> 
       <button onClick={handleLogout}>log out</button>
