@@ -14,9 +14,7 @@ const App = () => {
   const [username, setUsername] = useState('') 
   const [password, setPassword] = useState('')
 
-  const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
-  const [url, setUrl] = useState('')
+ 
 
   const [blogFormVisible, setBlogFormVisible] = useState(false)
 
@@ -92,29 +90,21 @@ const App = () => {
     window.localStorage.clear()
   }
 
-  const addBlog = async(event)=>{
+  const addBlog = async(blogObject)=>{
     event.preventDefault()
 
-    blogService.create({
-      title, author, url
-    }).then(response=>{
+    blogService.create(blogObject).then(response=>{
       setInfoMessage(`a new blog "${response.title}" added`)
       setTimeout(() => {
         setInfoMessage(null)
       }, 3000)
       setBlogs(blogs.concat(response))
-      setTitle('')
-      setAuthor('')
-      setUrl('')
       setBlogFormVisible(false)
     }).catch(error=>{
       setErrorMessage(error.response.data.error)
       setTimeout(() => {
         setErrorMessage(null)
       }, 5000)
-      setTitle('')
-      setAuthor('')
-      setUrl('')
     })
   }
 
@@ -128,14 +118,7 @@ const App = () => {
           <button onClick={() => setBlogFormVisible(true)}>new blog</button>
         </div>
         <div style={showWhenVisible}>
-          <BlogForm 
-            addBlog={addBlog} 
-            title={title}
-            author={author}
-            url={url}
-            handleTitleChange={({ target }) => setTitle(target.value)} 
-            handleAuthorChange={({ target }) => setAuthor(target.value)} 
-            handleUrlChange={({ target }) => setUrl(target.value)}/>
+          <BlogForm addBlog={addBlog} />
           <button onClick={() => setBlogFormVisible(false)}>cancel</button>
         </div>
       </div>
