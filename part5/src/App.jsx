@@ -14,8 +14,6 @@ const App = () => {
   const [username, setUsername] = useState('') 
   const [password, setPassword] = useState('')
 
- 
-
   const [blogFormVisible, setBlogFormVisible] = useState(false)
 
   useEffect(() => {
@@ -114,10 +112,7 @@ const App = () => {
       user: blog.user.id,
       likes: blog.likes + 1
     }
-    console.log(newObj)
     const updatedObj = await blogService.update(blog.id, newObj)
-    console.log(updatedObj)
-
     setBlogs(blogs.map(blog => blog.id !== updatedObj.id ? blog : updatedObj))
   }
 
@@ -147,7 +142,7 @@ const App = () => {
       <button onClick={handleLogout}>log out</button>
       {blogForm()}
 
-      {blogs.map(blog =>
+      {blogs.sort((a,b)=>b.likes-a.likes).map(blog =>
         <Blog key={blog.id} blog={blog} handleLike={handleLike}/>
       )}
     </div>
