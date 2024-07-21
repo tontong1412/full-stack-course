@@ -45,3 +45,26 @@ test('click view button',async() => {
   expect(div).toHaveTextContent('likes 5')
   expect(div).toHaveTextContent('url')
 })
+
+test('click like button twice, the event handler the component received as props is called twice', async() => {
+  const blog = {
+    title: 'title',
+    author: 'author',
+    url: 'url',
+    likes: 5,
+    user: {
+      name: 'owner'
+    },
+  }
+  const mockHandler = vi.fn()
+  render(<Blog blog={blog} handleLike={mockHandler} handleRemove={() => {}} user={{ name:'owner' }}/>)
+
+  const user = userEvent.setup()
+  const viewButton = screen.getByText('view')
+  await user.click(viewButton)
+
+  const likeButton = screen.getByText('like')
+  await user.click(likeButton)
+  await user.click(likeButton)
+  expect(mockHandler.mock.calls).toHaveLength(2)
+})
