@@ -4,16 +4,9 @@ import PropTypes from 'prop-types'
 const Blog = ({ blog, handleLike, handleRemove, user }) => {
 
   const [viewDetail, setViewDetail] = useState(false)
-  const blogStyle = {
-    paddingTop: 10,
-    paddingLeft: 2,
-    border: 'solid',
-    borderWidth: 1,
-    marginBottom: 5
-  }
 
   return (
-    <div style={blogStyle}>
+    <div className='blog'>
       {blog.title} {blog.author}
       <button onClick={() => setViewDetail(!viewDetail)}>{viewDetail? 'hide':'view'}</button>
       {
