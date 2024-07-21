@@ -1,13 +1,14 @@
 import { useState } from 'react'
+import PropTypes from 'prop-types'
 
-const BlogForm = ({addBlog}) => {
+const BlogForm = ({ addBlog }) => {
 
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
 
   const handleAddBlog = () => {
-    addBlog({title,author,url})
+    addBlog({ title,author,url })
     setTitle('')
     setAuthor('')
     setUrl('')
@@ -25,25 +26,30 @@ const BlogForm = ({addBlog}) => {
             onChange={({ target }) => setTitle(target.value)}
           />
         </div>
-      <div>
+        <div>
         author
-        <input
-          name="author"
-          value={author}
-          onChange={({ target }) => setAuthor(target.value)}
-        />
-      </div>
-      <div>
+          <input
+            name="author"
+            value={author}
+            onChange={({ target }) => setAuthor(target.value)}
+          />
+        </div>
+        <div>
         url
-        <input
-          name="url"
-          value={url}
-          onChange={({ target }) => setUrl(target.value)}
-        />
-      </div>
-      <button type="submit">create</button>
-    </form>
+          <input
+            name="url"
+            value={url}
+            onChange={({ target }) => setUrl(target.value)}
+          />
+        </div>
+        <button type="submit">create</button>
+      </form>
     </>
   )
 }
+
+BlogForm.propTypes = {
+  addBlog: PropTypes.func.isRequired
+}
+
 export default BlogForm

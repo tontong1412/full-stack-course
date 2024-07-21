@@ -11,7 +11,7 @@ const App = () => {
   const [user, setUser] = useState(null)
   const [errorMessage, setErrorMessage] = useState(null)
   const [infoMessage, setInfoMessage] = useState(null)
-  const [username, setUsername] = useState('') 
+  const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
 
   const [blogFormVisible, setBlogFormVisible] = useState(false)
@@ -28,12 +28,12 @@ const App = () => {
   useEffect(() => {
     blogService.getAll().then(blogs =>
       setBlogs( blogs )
-    )  
+    )
   }, [user])
 
   const handleLogin = async (event) => {
     event.preventDefault()
-    
+
     try {
       const user = await loginService.login({
         username, password,
@@ -56,29 +56,29 @@ const App = () => {
   if(user===null){
     return (
       <>
-      <ErrorMsg message={errorMessage} />
-      <h2>Log in to application</h2>
-      <form onSubmit={handleLogin}>
-        <div>
+        <ErrorMsg message={errorMessage} />
+        <h2>Log in to application</h2>
+        <form onSubmit={handleLogin}>
+          <div>
           username
             <input
-            type="text"
-            value={username}
-            name="Username"
-            onChange={({ target }) => setUsername(target.value)}
-          />
-        </div>
-        <div>
+              type="text"
+              value={username}
+              name="Username"
+              onChange={({ target }) => setUsername(target.value)}
+            />
+          </div>
+          <div>
           password
             <input
-            type="password"
-            value={password}
-            name="Password"
-            onChange={({ target }) => setPassword(target.value)}
-          />
-        </div>
-        <button type="submit">login</button>
-      </form>
+              type="password"
+              value={password}
+              name="Password"
+              onChange={({ target }) => setPassword(target.value)}
+            />
+          </div>
+          <button type="submit">login</button>
+        </form>
       </>
     )
   }
@@ -88,17 +88,17 @@ const App = () => {
     window.localStorage.clear()
   }
 
-  const addBlog = async(blogObject)=>{
+  const addBlog = async(blogObject) => {
     event.preventDefault()
 
-    blogService.create(blogObject).then(response=>{
+    blogService.create(blogObject).then(response => {
       setInfoMessage(`a new blog "${response.title}" added`)
       setTimeout(() => {
         setInfoMessage(null)
       }, 3000)
       setBlogs(blogs.concat(response))
       setBlogFormVisible(false)
-    }).catch(error=>{
+    }).catch(error => {
       setErrorMessage(error.response.data.error)
       setTimeout(() => {
         setErrorMessage(null)
@@ -109,14 +109,14 @@ const App = () => {
   const handleRemove = (blog) => {
     if(confirm(`Delete ${blog.title} by ${blog.author}?`)){
       blogService.remove(blog.id)
-      .then(response => {
-        setInfoMessage(`Deleted ${blog.title} by ${blog.author}`)
-        setTimeout(() => {
-          setInfoMessage(null)
-        }, 3000)
-        const newBlogs = blogs.filter(b =>b.id !== blog.id)
-        setBlogs(newBlogs)
-      })
+        .then(response => {
+          setInfoMessage(`Deleted ${blog.title} by ${blog.author}`)
+          setTimeout(() => {
+            setInfoMessage(null)
+          }, 3000)
+          const newBlogs = blogs.filter(b => b.id !== blog.id)
+          setBlogs(newBlogs)
+        })
     }
   }
 
@@ -152,11 +152,11 @@ const App = () => {
       <ErrorMsg message={errorMessage} />
       <InfoMsg message={infoMessage}/>
       <h2>blogs</h2>
-      <p>{`${user.name} is logged in`}</p> 
+      <p>{`${user.name} is logged in`}</p>
       <button onClick={handleLogout}>log out</button>
       {blogForm()}
 
-      {blogs.sort((a,b)=>b.likes-a.likes).map(blog =>
+      {blogs.sort((a,b) => b.likes-a.likes).map(blog =>
         <Blog key={blog.id} blog={blog} handleLike={handleLike} handleRemove={handleRemove} user={user}/>
       )}
     </div>
