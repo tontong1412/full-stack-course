@@ -1,4 +1,5 @@
 const { test, expect, beforeEach, describe } = require('@playwright/test')
+const { loginWith } = require('./helper')
 
 describe('Blog app', () => {
   beforeEach(async ({ page, request }) => {
@@ -23,18 +24,13 @@ describe('Blog app', () => {
 
   describe('Login', () => {
     test('succeeds with correct credentials', async ({ page }) => {
-      await page.getByTestId('username').fill('nsilamai')
-      await page.getByTestId('password').fill('password')
-      await page.getByRole('button', { name: 'login' }).click()
-
+      await loginWith(page, 'nsilamai', 'password')
       await expect(page.getByText('Nonnadda Silamai is logged in')).toBeVisible()
       await expect(page.getByText('blogs')).toBeVisible()
     })
 
     test('fails with wrong credentials', async ({ page }) => {
-      await page.getByTestId('username').fill('nsilamai')
-      await page.getByTestId('password').fill('password1234')
-      await page.getByRole('button', { name: 'login' }).click()
+      await loginWith(page, 'nsilamai', 'password1234')
 
       const errorDiv = await page.locator('.error')
       await expect(errorDiv).toContainText('Wrong credentials')
@@ -43,11 +39,22 @@ describe('Blog app', () => {
 
   describe('When logged in', () => {
     beforeEach(async ({ page }) => {
-
+      await loginWith(page, 'nsilamai', 'password')
     })
 
     test('a new blog can be created', async ({ page }) => {
-      // ...
+      await page.getByRole('button', { name: 'new blog' }).click()
+      await page.getByPlaceholder('Title of the blog').fill('test blog')
+      await page.getByPlaceholder('Author of the blog').fill('author')
+      await page.getByPlaceholder('Url of the blog').fill('url')
+      await page.getByRole('button', { name: 'create' }).click()
+
+      const infoDiv = await page.locator('.info')
+
+      await expect(infoDiv).toContainText('a new blog "test blog" added')
+      await expect(page.getByText('create new')).not.toBeVisible()
+      await expect(page.locator('.blog')).toContainText('test blog author')
+
     })
   })
 
