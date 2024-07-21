@@ -1,15 +1,13 @@
 const { test, expect, beforeEach, describe } = require('@playwright/test')
-const { loginWith, createBlog } = require('./helper')
+const { loginWith, createBlog, createUser } = require('./helper')
 
 describe('Blog app', () => {
   beforeEach(async ({ page, request }) => {
     await request.post('/api/testing/reset')
-    await request.post('/api/users', {
-      data: {
-        name: 'Nonnadda Silamai',
-        username: 'nsilamai',
-        password: 'password'
-      }
+    await createUser(request, {
+      name: 'Nonnadda Silamai',
+      username: 'nsilamai',
+      password: 'password'
     })
     await page.goto('/')
   })
@@ -65,6 +63,19 @@ describe('Blog app', () => {
       page.on('dialog', dialog => dialog.accept());
       await page.getByRole('button', { name: 'remove' }).click()
       await expect(page.locator('.blog')).not.toBeVisible()
+    })
+
+    test('cannot see remove button for the other user\'s blogs', async ({ page, request }) => {
+      await createUser(request, {
+        name: 'other user',
+        username: 'other',
+        password: 'password'
+      })
+      await createBlog(page, 'test blog', 'author', 'url')
+      await page.getByRole('button', { name: 'log out' }).click()
+      await loginWith(page, 'other', 'password')
+      await expect(page.locator('.blog')).toBeVisible()
+      await expect(page.getByRole('button', { name: 'remove' })).not.toBeVisible()
     })
 
   })
