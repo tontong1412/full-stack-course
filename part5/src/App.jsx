@@ -106,6 +106,20 @@ const App = () => {
     })
   }
 
+  const handleRemove = (blog) => {
+    if(confirm(`Delete ${blog.title} by ${blog.author}?`)){
+      blogService.remove(blog.id)
+      .then(response => {
+        setInfoMessage(`Deleted ${blog.title} by ${blog.author}`)
+        setTimeout(() => {
+          setInfoMessage(null)
+        }, 3000)
+        const newBlogs = blogs.filter(b =>b.id !== blog.id)
+        setBlogs(newBlogs)
+      })
+    }
+  }
+
   const handleLike = async(blog) => {
     const newObj = {
       ...blog,
@@ -143,7 +157,7 @@ const App = () => {
       {blogForm()}
 
       {blogs.sort((a,b)=>b.likes-a.likes).map(blog =>
-        <Blog key={blog.id} blog={blog} handleLike={handleLike}/>
+        <Blog key={blog.id} blog={blog} handleLike={handleLike} handleRemove={handleRemove} user={user}/>
       )}
     </div>
   )
