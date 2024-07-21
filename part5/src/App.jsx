@@ -89,8 +89,6 @@ const App = () => {
   }
 
   const addBlog = async(blogObject) => {
-    event.preventDefault()
-
     blogService.create(blogObject).then(response => {
       setInfoMessage(`a new blog "${response.title}" added`)
       setTimeout(() => {
