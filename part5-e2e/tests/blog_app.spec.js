@@ -36,7 +36,18 @@ describe('Blog app', () => {
       await page.getByTestId('password').fill('password1234')
       await page.getByRole('button', { name: 'login' }).click()
 
-      await expect(page.getByText('Wrong credentials')).toBeVisible()
+      const errorDiv = await page.locator('.error')
+      await expect(errorDiv).toContainText('Wrong credentials')
+    })
+  })
+
+  describe('When logged in', () => {
+    beforeEach(async ({ page }) => {
+
+    })
+
+    test('a new blog can be created', async ({ page }) => {
+      // ...
     })
   })
 
