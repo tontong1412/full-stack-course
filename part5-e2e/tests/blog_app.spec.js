@@ -80,4 +80,40 @@ describe('Blog app', () => {
 
   })
 
+  test('blogs are arranged in the order according to likes', async ({ page }) => {
+    await loginWith(page, 'nsilamai', 'password')
+    await createBlog(page, 'first blog', 'author', 'url')
+    await createBlog(page, 'second blog', 'author', 'url')
+    await createBlog(page, 'third blog', 'author', 'url')
+
+    const firstBlog = await page.getByText('first blog')
+    await firstBlog.getByRole('button', { name: 'view' }).click()
+    const firstBlogLikeButton = await firstBlog.getByRole('button', { name: 'like' })
+    await expect(firstBlog.getByText('likes 0')).toBeVisible()
+
+    await page.waitForTimeout(1000)
+
+    const secondBlog = await page.getByText('second blog')
+    await secondBlog.getByRole('button', { name: 'view' }).click()
+    const secondBlogLikeButton = await secondBlog.getByRole('button', { name: 'like' })
+    await secondBlogLikeButton.click()
+    await expect(secondBlog.getByText('likes 1')).toBeVisible()
+    await secondBlogLikeButton.click()
+    await expect(secondBlog.getByText('likes 2')).toBeVisible()
+
+    await page.waitForTimeout(1000)
+
+    const thirdBlog = await page.getByText('third blog')
+    await thirdBlog.getByRole('button', { name: 'view' }).click()
+    const thirdBlogLikeButton = await thirdBlog.getByRole('button', { name: 'like' })
+    await thirdBlogLikeButton.click()
+    await expect(thirdBlog.getByText('likes 1')).toBeVisible()
+
+    const blogs = await page.locator('.blog').all()
+    expect(blogs[0]).toContainText('second blog')
+    expect(blogs[1]).toContainText('third blog')
+    expect(blogs[2]).toContainText('first blog')
+
+  })
+
 })
