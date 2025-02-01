@@ -24,6 +24,15 @@ const errorMiddleware = (error: unknown, _req: Request, res: Response, next: Nex
   }
 }; 
 
+router.get('/:id', (req , res: Response<Patient>) => {
+  const patient = patientService.findById(req.params.id);
+  if(patient){
+    res.send(patient);
+  }else {
+    res.sendStatus(404);
+  }
+});
+
 router.get('/', (_req, res: Response<NonSensitivePatient[]>) => {
   res.send(patientService.getNonSensitivePatients());
 });

@@ -7,6 +7,7 @@ export const newPatientSchema = z.object({
   dateOfBirth: z.string().date(),
   occupation: z.string(),
   ssn: z.string(),
+  entries: z.array(z.any()),
 });
 
 export const toNewPatient = (object: unknown): NewPatient => {
